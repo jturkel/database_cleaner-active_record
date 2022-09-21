@@ -15,7 +15,11 @@ module DatabaseCleaner
 
     class Base < DatabaseCleaner::Strategy
       def self.migration_table_name
-        ::ActiveRecord::SchemaMigration.table_name
+        if ::ActiveRecord.version.release >= Gem::Version.new('7.1.0')
+          ::ActiveRecord::Base.connection.schema_migration.table_name
+        else
+          ::ActiveRecord::SchemaMigration.table_name
+        end
       end
 
       def self.exclusion_condition(column_name)
